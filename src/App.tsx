@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import TextField from '@mui/material/TextField';
 import CircularProgress from "@mui/material/CircularProgress";
 
 import WayPoint from "./component/WayPoint";
@@ -14,6 +15,7 @@ interface AppProps {
 function App({ test }: AppProps) {
   const [start, setStart] = useState<ILocation>();
   const [end, setEnd] = useState<ILocation>();
+  const [journeyDateTime, setJourneyDateTime] = useState<Date>(new Date());
   const [journeys, setJourneys] = useState<IJourneys>();
   const [journey, setJourney] = useState<Journey>();
   const [loading, setLoading] = useState(false);
@@ -27,7 +29,7 @@ function App({ test }: AppProps) {
 
     (async () => {
       setJourneys(undefined);
-      await getJourney(start.id, end.id)
+      await getJourney(start.id, end.id, journeyDateTime)
         .then((journeys) => {
           setJourneys(journeys);
           setJourney(journeys.journeys[0]);
@@ -38,7 +40,16 @@ function App({ test }: AppProps) {
         })
         .finally(() => setLoading(false));
     })();
-  }, [start, end]);
+  }, [start, end, journeyDateTime]);
+
+  const onDateStringChange = (event: any) => {
+    setJourneyDateTime(new Date(event.target.value));
+  };
+
+  const currentTimeString = () => {
+    const isoDate = journeyDateTime.toISOString();
+    return isoDate.substring(0, isoDate.lastIndexOf(':'));
+  };
 
   return (
     <div className="app">
@@ -49,7 +60,23 @@ function App({ test }: AppProps) {
         <div className="row mt-5">
           <div className="picker col-12 col-md-6">
             <WayPoint label="Start" testId="start" onChange={setStart} />
-            <WayPoint label="End" testId="end" onChange={setEnd} />
+            <div className="row">
+              <div className="col-6">
+                <WayPoint label="End" testId="end" onChange={setEnd} />
+              </div>
+              <div className="col-6">
+                <TextField
+                    label="Datetime"
+                    type="datetime-local"
+                    defaultValue={currentTimeString()}
+                    className='fullw journey-time'
+                    onChange={onDateStringChange}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+              </div>
+            </div>
             {loading && (
               <div className="center-item" data-testid="loading">
                 <CircularProgress />

@@ -19,10 +19,11 @@ export async function getStops(
 
 export async function getJourney(
   startID: string,
-  endID: string
+  endID: string,
+  date: Date,
 ): Promise<IJourneys> {
   return axios
-    .get<IJourneys>(`/journeys?from=${startID}&to=${endID}&stopovers=true`, {
+    .get<IJourneys>(`/journeys?from=${startID}&to=${endID}&stopovers=true&departure=${date.toISOString()}`, {
       baseURL: BASE_URL,
     })
     .then((res) => res.data)

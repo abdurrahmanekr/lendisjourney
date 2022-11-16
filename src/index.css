@@ -108,3 +108,7 @@ body {
   justify-content: center;
   padding: 10px;
 }
+
+.fullw {
+  width: 100%;
+}
